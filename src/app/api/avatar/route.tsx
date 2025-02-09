@@ -26,11 +26,10 @@ export async function GET(request: Request) {
         height: "100%",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: "50%",
-        fontSize: Number.parseInt(size) * 0.2,
+        borderRadius: "8px",
+        fontSize: Number.parseInt(size) * 0.3,
         fontWeight: 600,
         color: "white",
-        fontFamily: "Inter",
       }}
     >
       {text}
