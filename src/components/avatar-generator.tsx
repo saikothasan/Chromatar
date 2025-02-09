@@ -21,11 +21,17 @@ export function AvatarGenerator() {
   const [size, setSize] = useState("400")
   const { toast } = useToast()
 
-  const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : "http://localhost:3000"
-
+  const baseUrl = "https://chromatar.pages.dev"
   const avatarUrl = `${baseUrl}/api/avatar?text=${text}&gradient=${selectedGradient}&size=${size}`
+
+  const gradients = {
+    "1": "bg-gradient-to-br from-[#00DC82] to-[#36E4DA]",
+    "2": "bg-gradient-to-br from-[#0074E4] to-[#4699F8]",
+    "3": "bg-gradient-to-br from-[#FF4B4B] to-[#FF7C7C]",
+    "4": "bg-gradient-to-br from-[#7C3AED] to-[#A78BFA]",
+    "5": "bg-gradient-to-br from-[#F59E0B] to-[#FCD34D]",
+    "6": "bg-gradient-to-br from-[#EC4899] to-[#F472B6]",
+  }
 
   const copyUrl = async () => {
     await navigator.clipboard.writeText(avatarUrl)
@@ -48,78 +54,71 @@ export function AvatarGenerator() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-6 space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Avatar Generator</h1>
-        <p className="text-muted-foreground">Generate beautiful, minimal avatars for your projects.</p>
-      </div>
+    <div className="grid gap-8 md:grid-cols-[1fr,400px]">
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="text">Text (1-2 characters)</Label>
+          <Input
+            id="text"
+            value={text}
+            onChange={(e) => setText(e.target.value.slice(0, 2).toUpperCase())}
+            placeholder="Enter 1-2 letters"
+            maxLength={2}
+          />
+        </div>
 
-      <div className="grid gap-8 md:grid-cols-[1fr,300px]">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="text">Text (1-2 characters)</Label>
-            <Input
-              id="text"
-              value={text}
-              onChange={(e) => setText(e.target.value.slice(0, 2).toUpperCase())}
-              placeholder="Enter 1-2 letters"
-              maxLength={2}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Style</Label>
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3, 4, 5, 6].map((gradient) => (
-                <button
-                  key={gradient}
-                  onClick={() => setSelectedGradient(gradient.toString())}
-                  className={`h-20 rounded-lg overflow-hidden transition-all ${
-                    selectedGradient === gradient.toString() ? "ring-2 ring-primary ring-offset-2" : "hover:scale-105"
-                  }`}
-                >
-                  <img
-                    src={`/api/avatar?text=${text}&gradient=${gradient}&size=128`}
-                    alt={`Gradient ${gradient}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="size">Size</Label>
-            <Select value={size} onValueChange={setSize}>
-              <SelectTrigger id="size">
-                <SelectValue placeholder="Select size" />
-              </SelectTrigger>
-              <SelectContent>
-                {SIZES.map((size) => (
-                  <SelectItem key={size.value} value={size.value}>
-                    {size.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="space-y-2">
+          <Label>Style</Label>
+          <div className="grid grid-cols-3 gap-2">
+            {Object.entries(gradients).map(([key, gradient]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedGradient(key)}
+                className={`h-16 rounded-lg overflow-hidden transition-all flex items-center justify-center text-white font-semibold ${gradient} ${
+                  selectedGradient === key ? "ring-2 ring-black ring-offset-2" : "hover:scale-105"
+                }`}
+              >
+                {text}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="aspect-square rounded-xl overflow-hidden bg-muted">
-            <img src={avatarUrl || "/placeholder.svg"} alt="Generated avatar" className="w-full h-full object-cover" />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="size">Size</Label>
+          <Select value={size} onValueChange={setSize}>
+            <SelectTrigger id="size">
+              <SelectValue placeholder="Select size" />
+            </SelectTrigger>
+            <SelectContent>
+              {SIZES.map((size) => (
+                <SelectItem key={size.value} value={size.value}>
+                  {size.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <Button onClick={copyUrl} variant="outline">
-              <Copy className="w-4 h-4 mr-2" />
-              Copy URL
-            </Button>
-            <Button onClick={downloadAvatar} variant="outline">
-              <Download className="w-4 h-4 mr-2" />
-              Download
-            </Button>
+      <div className="space-y-4">
+        <div className="aspect-square rounded-lg overflow-hidden bg-gray-50">
+          <div
+            className={`w-full h-full ${gradients[selectedGradient]} flex items-center justify-center text-white text-8xl font-semibold`}
+          >
+            {text}
           </div>
+        </div>
+
+        <div className="flex gap-2">
+          <Button onClick={copyUrl} variant="outline" className="flex-1">
+            <Copy className="w-4 h-4 mr-2" />
+            Copy URL
+          </Button>
+          <Button onClick={downloadAvatar} variant="outline" className="flex-1">
+            <Download className="w-4 h-4 mr-2" />
+            Download
+          </Button>
         </div>
       </div>
     </div>
