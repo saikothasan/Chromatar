@@ -13,25 +13,27 @@ const SIZES = [
   { value: "128", label: "128px" },
   { value: "256", label: "256px" },
   { value: "400", label: "400px" },
-]
+] as const
+
+type GradientKey = "1" | "2" | "3" | "4" | "5" | "6"
+
+const gradients: Record<GradientKey, string> = {
+  "1": "bg-gradient-to-br from-[#00DC82] to-[#36E4DA]",
+  "2": "bg-gradient-to-br from-[#0074E4] to-[#4699F8]",
+  "3": "bg-gradient-to-br from-[#FF4B4B] to-[#FF7C7C]",
+  "4": "bg-gradient-to-br from-[#7C3AED] to-[#A78BFA]",
+  "5": "bg-gradient-to-br from-[#F59E0B] to-[#FCD34D]",
+  "6": "bg-gradient-to-br from-[#EC4899] to-[#F472B6]",
+}
 
 export function AvatarGenerator() {
   const [text, setText] = useState("V0")
-  const [selectedGradient, setSelectedGradient] = useState("1")
+  const [selectedGradient, setSelectedGradient] = useState<GradientKey>("1")
   const [size, setSize] = useState("400")
   const { toast } = useToast()
 
   const baseUrl = "https://chromatar.pages.dev"
   const avatarUrl = `${baseUrl}/api/avatar?text=${text}&gradient=${selectedGradient}&size=${size}`
-
-  const gradients = {
-    "1": "bg-gradient-to-br from-[#00DC82] to-[#36E4DA]",
-    "2": "bg-gradient-to-br from-[#0074E4] to-[#4699F8]",
-    "3": "bg-gradient-to-br from-[#FF4B4B] to-[#FF7C7C]",
-    "4": "bg-gradient-to-br from-[#7C3AED] to-[#A78BFA]",
-    "5": "bg-gradient-to-br from-[#F59E0B] to-[#FCD34D]",
-    "6": "bg-gradient-to-br from-[#EC4899] to-[#F472B6]",
-  }
 
   const copyUrl = async () => {
     await navigator.clipboard.writeText(avatarUrl)
@@ -70,7 +72,7 @@ export function AvatarGenerator() {
         <div className="space-y-2">
           <Label>Style</Label>
           <div className="grid grid-cols-3 gap-2">
-            {Object.entries(gradients).map(([key, gradient]) => (
+            {(Object.entries(gradients) as [GradientKey, string][]).map(([key, gradient]) => (
               <button
                 key={key}
                 onClick={() => setSelectedGradient(key)}
